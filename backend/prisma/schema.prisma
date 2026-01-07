@@ -1,0 +1,56 @@
+// Prisma schema for attendance system
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role       @default(EMPLOYEE)
+  salary    Float      @default(0)
+  joinDate  DateTime   @db.Date
+  isActive  Boolean    @default(true)
+  attendance Attendance[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Attendance {
+  id         Int                @id @default(autoincrement())
+  userId     Int
+  date       DateTime           @db.Date
+  status     AttendanceStatus   @default(PRESENT)
+  totalHours Float              @default(0)
+  user       User               @relation(fields: [userId], references: [id])
+  timeLog    TimeLog?
+
+  @@unique([userId, date])
+  @@index([date])
+}
+
+model TimeLog {
+  id           Int        @id @default(autoincrement())
+  attendanceId Int        @unique
+  checkIn      DateTime
+  checkOut     DateTime?
+  attendance   Attendance @relation(fields: [attendanceId], references: [id])
+}
