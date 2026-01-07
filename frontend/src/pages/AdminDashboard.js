@@ -138,7 +138,7 @@ function AdminDashboard() {
       </section>
 
       <section style={{ marginTop: '30px', border: '1px solid #ddd', padding: '16px' }}>
-        <h3>Employee Attendance History</h3>
+        <h3>Employee Attendance 5 History</h3>
         <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
           <select value={historyEmployeeId} onChange={(e) => setHistoryEmployeeId(e.target.value)}>
             <option value="">Select employee</option>
