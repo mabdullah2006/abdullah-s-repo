@@ -15,6 +15,8 @@ function AdminDashboard() {
   const [historyEmployeeId, setHistoryEmployeeId] = useState('');
   const [historyMonth, setHistoryMonth] = useState('');
   const [historyTotal, setHistoryTotal] = useState(0);
+  const activeCount = employees.filter((employee) => employee.isActive).length;
+  const adminCount = employees.filter((employee) => employee.role === 'ADMIN').length;
 
   const loadEmployees = async () => {
     const response = await api.get('/employees');
@@ -56,6 +58,13 @@ function AdminDashboard() {
     await loadEmployees();
   };
 
+  const handleDelete = async (employee) => {
+    const ok = window.confirm(`Delete ${employee.name}? This cannot be undone.`);
+    if (!ok) return;
+    await api.delete(`/employees/${employee.id}`);
+    await loadEmployees();
+  };
+
   const handleDaySearch = async () => {
     if (!day) return;
     const response = await api.get(`/attendance/day?date=${day}`);
@@ -71,89 +80,126 @@ function AdminDashboard() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Admin Dashboard</h2>
-        <button onClick={logout}>Logout</button>
-      </header>
+    <div className="app-shell">
+      <div className="page">
+        <header className="page-header">
+          <div>
+            <h2>Admin Dashboard</h2>
+            <p className="muted">Manage employees, track attendance, and review hours.</p>
+          </div>
+          <button className="button ghost" onClick={logout}>Logout</button>
+        </header>
 
-      {message && <p>{message}</p>}
+        {message && <p className="message">{message}</p>}
 
-      <section style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <div style={{ border: '1px solid #ddd', padding: '16px' }}>
-          <h3>{selectedEmployee ? 'Update Employee' : 'Add Employee'}</h3>
-          <EmployeeForm
-            onSubmit={handleCreateOrUpdate}
-            selectedEmployee={selectedEmployee}
-            onCancel={() => setSelectedEmployee(null)}
-          />
-        </div>
-        <div style={{ border: '1px solid #ddd', padding: '16px' }}>
-          <h3>Employee List</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {employees.map((employee) => (
-              <li key={employee.id} style={{ marginBottom: '10px' }}>
-                <strong>{employee.name}</strong> ({employee.email}) - {employee.role} -
-                {employee.isActive ? ' Active' : ' Inactive'}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                  <button onClick={() => setSelectedEmployee(employee)}>Edit</button>
-                  {employee.isActive && (
-                    <button onClick={() => handleDeactivate(employee)}>Deactivate</button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+        <section className="stats">
+          <div className="stat">
+            <div className="stat-label">Total Employees</div>
+            <div className="stat-value">{employees.length}</div>
+          </div>
+          <div className="stat">
+            <div className="stat-label">Active Employees</div>
+            <div className="stat-value">{activeCount}</div>
+          </div>
+          <div className="stat">
+            <div className="stat-label">Admins</div>
+            <div className="stat-value">{adminCount}</div>
+          </div>
+        </section>
 
-      <section style={{ marginTop: '30px', border: '1px solid #ddd', padding: '16px' }}>
-        <h3>Day-wise Attendance</h3>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-          <input type="date" value={day} onChange={(e) => setDay(e.target.value)} />
-          <button onClick={handleDaySearch}>Load</button>
-        </div>
-        {dayList.length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Employee</th>
-                <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Status</th>
-                <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Hours</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dayList.map((row) => (
-                <tr key={row.userId}>
-                  <td>{row.name}</td>
-                  <td>{row.status}</td>
-                  <td>{row.totalHours}</td>
-                </tr>
+        <section className="grid grid-2">
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title">{selectedEmployee ? 'Update Employee' : 'Add Employee'}</h3>
+            </div>
+            <EmployeeForm
+              onSubmit={handleCreateOrUpdate}
+              selectedEmployee={selectedEmployee}
+              onCancel={() => setSelectedEmployee(null)}
+            />
+          </div>
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title">Employee List</h3>
+              <span className="muted">{employees.length} total</span>
+            </div>
+            <ul className="list">
+              {employees.map((employee) => (
+                <li key={employee.id} className="list-item">
+                  <div>
+                    <strong>{employee.name}</strong>
+                    <div className="muted">{employee.email}</div>
+                    <div className="muted">{employee.role} · {employee.isActive ? 'Active' : 'Inactive'}</div>
+                  </div>
+                  <div className="list-actions">
+                    <button className="button" onClick={() => setSelectedEmployee(employee)}>Edit</button>
+                    {employee.isActive && (
+                      <button className="button ghost" onClick={() => handleDeactivate(employee)}>Deactivate</button>
+                    )}
+                    <button className="button ghost" onClick={() => handleDelete(employee)}>Delete</button>
+                  </div>
+                </li>
               ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No data loaded.</p>
-        )}
-      </section>
+            </ul>
+          </div>
+        </section>
 
-      <section style={{ marginTop: '30px', border: '1px solid #ddd', padding: '16px' }}>
-        <h3>Employee Attendance 5 History</h3>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-          <select value={historyEmployeeId} onChange={(e) => setHistoryEmployeeId(e.target.value)}>
-            <option value="">Select employee</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.id}>
-                {employee.name}
-              </option>
-            ))}
-          </select>
-          <input type="month" value={historyMonth} onChange={(e) => setHistoryMonth(e.target.value)} />
-          <button onClick={handleHistorySearch}>Load</button>
-        </div>
-        <p>Total Hours: {historyTotal}</p>
-        <AttendanceTable rows={history} />
-      </section>
+        <section className="card">
+          <div className="card-header">
+            <h3 className="card-title">Day-wise Attendance</h3>
+          </div>
+          <div className="toolbar">
+            <input className="input" type="date" value={day} onChange={(e) => setDay(e.target.value)} />
+            <button className="button primary" onClick={handleDaySearch}>Load</button>
+          </div>
+          {dayList.length > 0 ? (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Status</th>
+                  <th>Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dayList.map((row) => (
+                  <tr key={row.userId}>
+                    <td>{row.name}</td>
+                    <td>
+                      <span className={`pill ${row.status === 'PRESENT' ? 'present' : 'absent'}`}>
+                        {row.status}
+                      </span>
+                    </td>
+                    <td>{row.totalHours}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="muted">No data loaded.</p>
+          )}
+        </section>
+
+        <section className="card">
+          <div className="card-header">
+            <h3 className="card-title">Employee Attendance History</h3>
+          </div>
+          <div className="toolbar">
+            <select className="select" value={historyEmployeeId} onChange={(e) => setHistoryEmployeeId(e.target.value)}>
+              <option value="">Select employee</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+            <input className="input" type="month" value={historyMonth} onChange={(e) => setHistoryMonth(e.target.value)} />
+            <button className="button primary" onClick={handleHistorySearch}>Load</button>
+          </div>
+          <p className="muted">Total Hours: {historyTotal}</p>
+          <AttendanceTable rows={history} />
+        </section>
+      </div>
     </div>
   );
 }

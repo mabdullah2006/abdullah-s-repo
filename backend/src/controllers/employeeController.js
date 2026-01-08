@@ -139,8 +139,23 @@ async function updateEmployee(req, res) {
   }
 }
 
+async function deleteEmployee(req, res) {
+  const employeeId = Number(req.params.id);
+  if (Number.isNaN(employeeId)) {
+    return res.status(400).json({ message: 'Invalid employee id.' });
+  }
+
+  try {
+    await prisma.user.delete({ where: { id: employeeId } });
+    return res.json({ message: 'Employee deleted.' });
+  } catch (error) {
+    return res.status(404).json({ message: 'Employee not found.' });
+  }
+}
+
 module.exports = {
   createEmployee,
   listEmployees,
-  updateEmployee
+  updateEmployee,
+  deleteEmployee
 };

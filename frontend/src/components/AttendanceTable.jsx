@@ -13,25 +13,29 @@ function formatTime(dateString) {
 
 function AttendanceTable({ rows }) {
   if (!rows || rows.length === 0) {
-    return <p>No attendance records found.</p>;
+    return <p className="muted">No attendance records found.</p>;
   }
 
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <table className="table">
       <thead>
         <tr>
-          <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Date</th>
-          <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Status</th>
-          <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Check In</th>
-          <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Check Out</th>
-          <th style={{ borderBottom: '1px solid #ccc', textAlign: 'left' }}>Total Hours</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Check In</th>
+          <th>Check Out</th>
+          <th>Total Hours</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
           <tr key={row.id}>
-            <td style={{ padding: '6px 0' }}>{formatDate(row.date)}</td>
-            <td>{row.status}</td>
+            <td>{formatDate(row.date)}</td>
+            <td>
+              <span className={`pill ${row.status === 'PRESENT' ? 'present' : 'absent'}`}>
+                {row.status}
+              </span>
+            </td>
             <td>{formatTime(row.timeLog?.checkIn)}</td>
             <td>{formatTime(row.timeLog?.checkOut)}</td>
             <td>{row.totalHours}</td>

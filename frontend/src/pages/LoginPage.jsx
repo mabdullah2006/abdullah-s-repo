@@ -21,14 +21,31 @@ function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: '360px', margin: '60px auto', padding: '20px', border: '1px solid #ccc' }}>
-      <h2>Attendance Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '10px' }}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Login</button>
-      </form>
+    <div className="auth-shell">
+      <div className="auth-card">
+        <h2 className="auth-title">Attendance Manager</h2>
+        <p className="muted">Sign in to manage daily attendance and payroll data.</p>
+        {error && <p className="message">{error}</p>}
+        <form onSubmit={handleSubmit} className="form-grid">
+          <input
+            className="input"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            className="input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button className="button primary" type="submit">Login</button>
+        </form>
+      </div>
     </div>
   );
 }

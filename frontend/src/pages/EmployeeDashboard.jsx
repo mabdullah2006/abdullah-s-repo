@@ -49,28 +49,40 @@ function EmployeeDashboard() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Welcome, {user?.name}</h2>
-        <button onClick={logout}>Logout</button>
-      </header>
+    <div className="app-shell">
+      <div className="page">
+        <header className="page-header">
+          <div>
+            <h2>Welcome, {user?.name}</h2>
+            <p className="muted">Track your check-ins and review monthly hours.</p>
+          </div>
+          <button className="button ghost" onClick={logout}>Logout</button>
+        </header>
 
-      {message && <p>{message}</p>}
+        {message && <p className="message">{message}</p>}
 
-      <section style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-        <button onClick={handleCheckIn}>Check In</button>
-        <button onClick={handleCheckOut}>Check Out</button>
-      </section>
+        <section className="card">
+          <div className="card-header">
+            <h3 className="card-title">Today</h3>
+          </div>
+          <div className="toolbar">
+            <button className="button primary" onClick={handleCheckIn}>Check In</button>
+            <button className="button" onClick={handleCheckOut}>Check Out</button>
+          </div>
+        </section>
 
-      <section style={{ marginTop: '20px' }}>
-        <label style={{ display: 'block', marginBottom: '8px' }}>Filter by Month</label>
-        <input type="month" value={month} onChange={(e) => handleMonthChange(e.target.value)} />
-      </section>
-
-      <section style={{ marginTop: '20px' }}>
-        <p>Total Hours: {totalHours}</p>
-        <AttendanceTable rows={attendance} />
-      </section>
+        <section className="card">
+          <div className="card-header">
+            <h3 className="card-title">Attendance History</h3>
+            <span className="muted">Total Hours: {totalHours}</span>
+          </div>
+          <div className="toolbar">
+            <label className="muted">Filter by month</label>
+            <input className="input" type="month" value={month} onChange={(e) => handleMonthChange(e.target.value)} />
+          </div>
+          <AttendanceTable rows={attendance} />
+        </section>
+      </div>
     </div>
   );
 }

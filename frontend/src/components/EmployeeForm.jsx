@@ -38,16 +38,17 @@ function EmployeeForm({ onSubmit, selectedEmployee, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '8px' }}>
-      <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
-      <input name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-      <input name="salary" placeholder="Salary" value={form.salary} onChange={handleChange} />
-      <input name="joinDate" type="date" value={form.joinDate} onChange={handleChange} />
-      <select name="role" value={form.role} onChange={handleChange}>
+    <form onSubmit={handleSubmit} className="form-grid">
+      <input className="input" name="name" placeholder="Full name" value={form.name} onChange={handleChange} required />
+      <input className="input" name="email" placeholder="Work email" value={form.email} onChange={handleChange} required />
+      <input className="input" name="salary" placeholder="Monthly salary" value={form.salary} onChange={handleChange} />
+      <input className="input" name="joinDate" type="date" value={form.joinDate} onChange={handleChange} />
+      <select className="select" name="role" value={form.role} onChange={handleChange}>
         <option value="EMPLOYEE">EMPLOYEE</option>
         <option value="ADMIN">ADMIN</option>
       </select>
       <input
+        className="input"
         name="password"
         placeholder={selectedEmployee ? 'New password (optional)' : 'Password'}
         value={form.password}
@@ -55,10 +56,12 @@ function EmployeeForm({ onSubmit, selectedEmployee, onCancel }) {
         type="password"
         required={!selectedEmployee}
       />
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <button type="submit">{selectedEmployee ? 'Update' : 'Add'} Employee</button>
+      <div className="toolbar">
+        <button className="button primary" type="submit">
+          {selectedEmployee ? 'Update' : 'Add'} Employee
+        </button>
         {selectedEmployee && (
-          <button type="button" onClick={onCancel}>
+          <button className="button ghost" type="button" onClick={onCancel}>
             Cancel
           </button>
         )}
